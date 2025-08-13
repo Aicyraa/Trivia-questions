@@ -1,0 +1,43 @@
+@import url();
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.nav {
+  box-shadow: 0 0 5px black;
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  height: 80vh;
+  width: auto;
+}
+
+.trivia__container {
+  border: 1px solid black;
+  box-sizing: border-box;
+  height: 450px;
+  width: 550px;
+}
+
+.trivia {
+  border: 1px solid black;
+  height: 200px;
+}
+
+.trivia__btn button {
+  width: 300px;
+  padding: 10px 10px;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  border: none;
+}

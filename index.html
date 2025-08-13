@@ -3,12 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title></title>
+    <title> </title>
+    <link rel="stylesheet" href="./style/style.css" />
   </head>
   <body>
     <div class="nav">
       <!-- navigation bar-->
-      <div class="app__logo"></div>
+      <div class="app__logo">
+        <p>LOGO</p>
+      </div>
       <div class="trivia__details">
         <select name="amount" id="amount" class="details trivia__amount">
           <option value="5">5</option>
@@ -56,7 +59,16 @@
 
     <div class="main">
       <!-- main content-->
-      <button id="getQst">Get Question</button>
+      <div class="trivia__container">
+        <div class="trivia">
+          <p id="trivia__txt"></p>
+        </div>
+        <div class="trivia__choices"></div>
+      </div>
+      <div class="trivia__btn">
+        <button id="nextQst" style="display: none;">Next Question</button>
+        <button id="getQst">Get Question</button>
+      </div>
     </div>
   </body>
   <script src="script.js"></script>
