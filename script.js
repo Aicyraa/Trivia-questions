@@ -1,6 +1,7 @@
 const getBtn = document.getElementById("getQst");
 const trivia_txt = document.getElementById("trivia_txt");
 const choices__container = document.querySelector(".trivia__choices");
+let numberChecker = [];
 let isStarting = false;
 
 async function getTrivia(amount, category, difficulty) {
@@ -49,16 +50,30 @@ function currentTrivia(trivia) {
 function showTrivia(trivia) {
   document.getElementById("trivia__txt").innerHTML = trivia.question;
   let choices = trivia["incorrect_answers"].concat(trivia.correct_answer);
-  
-  for (let i = 0; i < choices.length - 1; i++) {
-    let number = []
-    let randomize = Math.floor(Math.random() * 4) - 1;
-    let choice = document.createElement("div");
 
-    choice.innerHTML = choices[randomize];
+  for (let i = 0; i < choices.length; i++) {
+    if (numberChecker.length == 4) {
+      numberChecker = [];
+    }
+
+    let randomize = randomizer()
+    let choice = document.createElement("div");
+     
+    choice.innerHTML = choices[randomize - 1];
     console.log(choice);
-    choices__container.append(choice)
+    choices__container.append(choice);
   }
 }
-
+function randomizer() {
+  let randomize;
+  while (true) {
+    randomize = Math.floor(Math.random() * 4) + 1;
+    if (numberChecker.includes(randomize)) {
+      continue;
+    } else {
+      numberChecker.push(randomize);
+      return randomize;
+    }
+  }
+}
 function checkAnswer() {}
