@@ -40,6 +40,10 @@ body {
   width: auto;
 }
 
+.trivia__btn{
+  height: 50px;
+}
+
 /* main content */
 
 .trivia__container {
@@ -98,4 +102,8 @@ body {
 .choice.correct{
   background-color: hsl(128, 50%, 50%);
   color: var(--bg-highlight);
+}
+
+.show{
+  display: inline !important;
 }

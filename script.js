@@ -15,6 +15,23 @@ function triviaDetails() {
   return [amount.value, category.value, difficulty.value];
 }
 
+function randomizer() {
+  while (true) {
+    let randomize = Math.floor(Math.random() * 4) + 1;
+    if (numberChecker.includes(randomize)) {
+      continue;
+    } else {
+      numberChecker.push(randomize);
+      return randomize;
+    }
+  }
+}
+
+function dissable(){
+  choices__container.style.pointerEvents = 'none';
+  nextBtn.classList.add('show')
+}
+
 function createTrivia(correct, choices, randomize) {
   let choice = document.createElement("div");
   choice.innerHTML = choices[randomize];
@@ -32,26 +49,18 @@ function createTrivia(correct, choices, randomize) {
           element.classList.add("correct");
         }
       });
+     dissable()
       return;
     }
-
-    answer.classList.add("correct");
+    
+   dissable()
+   answer.classList.add('correct')
+    
   });
 
   return choice;
 }
 
-function randomizer() {
-  while (true) {
-    let randomize = Math.floor(Math.random() * 4) + 1;
-    if (numberChecker.includes(randomize)) {
-      continue;
-    } else {
-      numberChecker.push(randomize);
-      return randomize;
-    }
-  }
-}
 
 async function getTrivia(amount, category, difficulty) {
   const result = await fetch(
@@ -84,7 +93,6 @@ getBtn.addEventListener("click", async (e) => {
 
   if (localStorage.getItem("quizStatus")) {
     getBtn.style.display = "none";
-    nextBtn.style.display = "inline";
   }
 });
 
@@ -103,7 +111,6 @@ function showTrivia(trivia, random) {
     if (numberChecker.length == 4) {
       numberChecker = [];
     }
-
     let randomize = random() - 1;
     let choice = createTrivia(trivia["correct_answer"], choices, randomize);
     choices__container.append(choice);
