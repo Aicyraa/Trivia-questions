@@ -4,6 +4,7 @@ const trivia_txt = document.getElementById("trivia_txt");
 const choices__container = document.querySelector(".trivia__choices");
 let numberChecker = [];
 let isStarting = false;
+let score = 0;
 
 // support funciton
 
@@ -12,6 +13,32 @@ function triviaDetails() {
   let category = document.querySelector(".trivia__category");
   let difficulty = document.querySelector(".trivia__difficulty");
   return [amount.value, category.value, difficulty.value];
+}
+
+function createTrivia(correct, choices, randomize) {
+  let choice = document.createElement("div");
+  choice.innerHTML = choices[randomize];
+  choice.classList.add("choice");
+  choice.dataset.choice = choices[randomize];
+
+  choice.addEventListener("click", (e) => {
+    let choices = document.querySelectorAll(".choice");
+    let answer = e.target;
+
+    if (answer.dataset.choice !== correct) {
+      answer.classList.add("incorrect");
+      choices.forEach((element) => {
+        if (element.dataset.choice === correct) {
+          element.classList.add("correct");
+        }
+      });
+      return;
+    }
+
+    answer.classList.add("correct");
+  });
+
+  return choice;
 }
 
 function randomizer() {
@@ -77,19 +104,8 @@ function showTrivia(trivia, random) {
       numberChecker = [];
     }
 
-    let randomize = random(); // for displaying the choices
-    let choice = document.createElement("div");
-    choice.innerHTML = choices[randomize - 1];
-    choice.dataset.choice = choices[randomize - 1];
-    choice.addEventListener("click", (e) => {
-      console.log(e.target.dataset);
-      if(e.target.dataset.choice == trivia.correct_answer) console.log('correct');
-      else console.log('wrong');
-      
-      
-    });
-
+    let randomize = random() - 1;
+    let choice = createTrivia(trivia["correct_answer"], choices, randomize);
     choices__container.append(choice);
   }
 }
-

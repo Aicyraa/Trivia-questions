@@ -1,12 +1,30 @@
 @import url();
 
+:root {
+  --bg: hsl(0, 0%, 90%);
+  --bg-light: hsl(0, 0%, 94%);
+  --bg-highlight: hsl(0, 0%, 98%);
+  --color-text: hsl(0, 0%, 15%);
+  --color-border: hsl(0, 0%, 85%);
+
+  --color-primary: hsl(210, 50%, 70%);
+  --color-secondary: hsl(0, 0%, 40%);
+
+  --color-shadow: hsl(0, 0%, 0%, 0.1);
+}
+
 * {
   margin: 0;
   padding: 0;
 }
 
+body {
+  background-color: var(--bg);
+}
+
 .nav {
-  box-shadow: 0 0 5px black;
+  box-shadow: 0 0 5px var(--color-border);
+  background-color: var(--bg-light);
   padding: 20px;
   display: flex;
   justify-content: space-around;
@@ -22,16 +40,45 @@
   width: auto;
 }
 
+/* main content */
+
 .trivia__container {
-  border: 1px solid black;
   box-sizing: border-box;
+  padding: 10px;
   height: 450px;
   width: 550px;
 }
 
 .trivia {
-  border: 1px solid black;
-  height: 200px;
+  min-height: 200px;
+  max-height: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: var(--bg-light);
+  box-shadow: 0 0 5px var(--color-shadow);
+  border-radius: 8px;
+}
+
+.trivia > p {
+  font-size: 25px;
+  letter-spacing: 1px;
+  padding: 0 10px;
+  line-height: 2rem;
+  color: var(--color-text);
+}
+
+.trivia__choices > div {
+  padding: 10px;
+  margin: 15px 5px;
+  letter-spacing: 3px;
+  border-radius: 8px;
+  font-size: 20px;
+  text-align: center;
+  color: var(--color-text);
+  background-color: var(--bg-light);
+  box-shadow: 0 0 5px var(--color-shadow);
 }
 
 .trivia__btn button {
@@ -40,4 +87,15 @@
   font-size: 1rem;
   letter-spacing: 3px;
   border: none;
+}
+
+/* style for answer */
+
+.choice.incorrect{
+  background-color: hsl(5, 50%, 50%);
+}
+
+.choice.correct{
+  background-color: hsl(128, 50%, 50%);
+  color: var(--bg-highlight);
 }
