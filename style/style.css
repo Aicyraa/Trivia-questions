@@ -1,33 +1,81 @@
-@import url();
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
 :root {
-  --bg: hsl(0, 0%, 90%);
-  --bg-light: hsl(0, 0%, 94%);
+  --bg: hsl(210, 36%, 96%);
+  --bg-light: #ffffff;
   --bg-highlight: hsl(0, 0%, 98%);
-  --color-text: hsl(0, 0%, 15%);
-  --color-border: hsl(0, 0%, 85%);
+  --color-text: hsl(210, 22%, 20%);
+  --color-border: hsl(210, 22%, 90%);
 
-  --color-primary: hsl(210, 50%, 70%);
+  --color-primary: hsl(210, 70%, 60%);
+  --color-primary-hover: hsl(210, 70%, 55%);
   --color-secondary: hsl(0, 0%, 40%);
 
-  --color-shadow: hsl(0, 0%, 0%, 0.1);
+  --color-shadow: rgba(0, 0, 0, 0.08);
 }
 
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--bg);
+  font-family: "Poppins", sans-serif;
+  color: var(--color-text);
 }
 
+/* --- Collapsible navbar --- */
 .nav {
-  box-shadow: 0 0 5px var(--color-border);
-  background-color: var(--bg-light);
-  padding: 20px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+  padding: 12px 16px;
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  box-shadow: 0 2px 10px var(--color-shadow);
+}
+
+.nav__panel { display: flex; align-items: center; gap: 10px; }
+
+/* Hamburger button */
+.nav__toggle {
+  display: none; 
+  position: relative;
+  width: 44px; height: 44px;
+  border: 0; background: transparent; cursor: pointer;
+}
+.nav__toggle span {
+  position: absolute; left: 12px; right: 12px; height: 2px; background: #fff;
+  transition: transform .25s, opacity .25s; border-radius: 2px;
+}
+.nav__toggle span:nth-child(1) { top: 14px; }
+.nav__toggle span:nth-child(2) { top: 21px; }
+.nav__toggle span:nth-child(3) { top: 28px; }
+.nav.open .nav__toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav.open .nav__toggle span:nth-child(2) { opacity: 0; }
+.nav.open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+.app__logo p {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.trivia__details select {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  box-shadow: 0 2px 5px var(--color-shadow);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.trivia__details select:focus {
+  outline: 2px solid var(--color-primary);
 }
 
 .main {
@@ -37,77 +85,143 @@ body {
   flex-direction: column;
   gap: 1rem;
   height: 80vh;
-  width: auto;
 }
-
-.trivia__btn{
-  height: 50px;
-}
-
-/* main content */
 
 .trivia__container {
-  box-sizing: border-box;
-  padding: 10px;
-  height: 450px;
+  padding: 20px;
+  background-color: var(--bg-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--color-shadow);
   width: 550px;
+  max-width: 90%;
 }
 
 .trivia {
-  min-height: 200px;
-  max-height: max-content;
+  min-height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: var(--bg-light);
-  box-shadow: 0 0 5px var(--color-shadow);
+  background-color: var(--bg-highlight);
   border-radius: 8px;
+  padding: 15px;
 }
 
 .trivia > p {
-  font-size: 25px;
-  letter-spacing: 1px;
-  padding: 0 10px;
-  line-height: 2rem;
-  color: var(--color-text);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.5rem;
 }
 
 .trivia__choices > div {
-  padding: 10px;
-  margin: 15px 5px;
-  letter-spacing: 3px;
+  padding: 12px;
+  margin: 12px 5px;
   border-radius: 8px;
-  font-size: 20px;
-  text-align: center;
-  color: var(--color-text);
+  font-size: 1rem;
   background-color: var(--bg-light);
-  box-shadow: 0 0 5px var(--color-shadow);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.trivia__choices > div:hover {
+  background-color: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .trivia__btn button {
-  width: 300px;
-  padding: 10px 10px;
+  width: 250px;
+  padding: 12px;
   font-size: 1rem;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   border: none;
+  border-radius: 8px;
+  background-color: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* style for answer */
-
-.choice.incorrect{
-  background-color: hsl(5, 50%, 50%);
+.trivia__btn button:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
 }
 
-.choice.correct{
-  background-color: hsl(128, 50%, 50%);
-  color: var(--bg-highlight);
+.choice.incorrect {
+  background-color: hsl(5, 70%, 55%) !important;
+  color: white;
 }
 
-.show{
-  display: inline !important;
+.choice.correct {
+  background-color: hsl(128, 50%, 45%) !important;
+  color: white;
 }
 
-.disable{
-  pointer-events: none !important;
+.disable {
+  pointer-events: none;
+}
+
+.hide {
+  display: none;
+}
+.show {
+  display: inline-block !important;
+}
+
+/* ----------------
+   RESPONSIVE RULES
+   ---------------- */
+@media (min-width: 641px) {
+  .nav__toggle { display: none; }
+  .nav__panel { display: flex; }
+  .trivia__details { display: flex; gap: 10px; }
+}
+
+@media (max-width: 640px) {
+  .nav { flex-wrap: wrap; }
+  .nav__toggle { display: inline-block; }
+  .nav__panel {
+    width: 100%;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .25s ease;
+  }
+  .nav.open .nav__panel { max-height: 300px; } /* enough for the selects */
+  .trivia__details {
+    display: flex; flex-direction: column; gap: 8px; padding: 8px 0;
+  }
+  .trivia__details select {
+    width: 100%; min-height: 44px; font-size: .95rem; padding: 8px 10px;
+  }
+
+  .trivia__container{
+    margin-top: 20px;
+  }
+
+  .main{
+    margin-top: 25px;
+  }
+}
+
+.trivia__btn button { position: relative; }
+.trivia__btn button.btn--loading {
+  color: transparent !important; pointer-events: none; opacity: 0.9;
+}
+.trivia__btn button.btn--loading::after {
+  content: "Loading…";
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font-weight: 600;
+}
+.trivia__btn button.btn--loading::before {
+  content: "";
+  position: absolute; left: 12px; top: 50%;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.6); border-top-color: #fff;
+  transform: translateY(-50%);
+  animation: btnspin .7s linear infinite;
+}
+@keyframes btnspin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
 }

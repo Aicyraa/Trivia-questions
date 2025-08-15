@@ -1,139 +1,188 @@
+// ==========================
+// DOM ELEMENTS
+// ==========================
 const getBtn = document.getElementById("getQst");
 const nextBtn = document.getElementById("nextQst");
-const trivia_txt = document.getElementById("trivia__txt");
-const choices__container = document.querySelector(".trivia__choices");
+const triviaText = document.getElementById("trivia__txt");
+const choicesContainer = document.querySelector(".trivia__choices");
+const nav = document.querySelector(".nav");
+const navToggle = document.querySelector(".nav__toggle");
+
+// ==========================
+// STATE VARIABLES
+// ==========================
 let numberChecker = [];
-let indicator = 0;
+let questionIndex = 0;
 let isStarting = false;
-let score = 0;
 
-// support funciton
+// ==========================
+// UTILITY FUNCTIONS
+// ==========================
 
-function triviaSettings() {
-  let amount = document.querySelector(".trivia__amount");
-  let category = document.querySelector(".trivia__category");
-  let difficulty = document.querySelector(".trivia__difficulty");
-  return [amount.value, category.value, difficulty.value];
+// Get trivia settings from form inputs
+function getTriviaSettings() {
+  return [
+    document.querySelector(".trivia__amount").value,
+    document.querySelector(".trivia__category").value,
+    document.querySelector(".trivia__difficulty").value
+  ];
 }
 
-function choicesRandomizer() {
+// Generate unique random position for choices
+function getRandomChoiceIndex() {
   while (true) {
-    let randomize = Math.floor(Math.random() * 4) + 1;
-    if (numberChecker.includes(randomize)) {
-      continue;
-    } else {
-      numberChecker.push(randomize);
-      return randomize;
+    const randomIndex = Math.floor(Math.random() * 4) + 1;
+    if (!numberChecker.includes(randomIndex)) {
+      numberChecker.push(randomIndex);
+      return randomIndex;
     }
   }
 }
 
+// Disable further choice selection and show "Next" button
 function disableChoices() {
-  choices__container.classList.toggle("disable");
+  choicesContainer.classList.toggle("disable");
   nextBtn.classList.toggle("show");
 }
 
-function createTrivia(correct, choices, randomize) {
-  let choice = document.createElement("div");
+// Show or hide loading state on the active button
+function setLoading(isLoading) {
+  const nextVisible = getComputedStyle(nextBtn).display !== "none";
+  const targetBtn = nextVisible ? nextBtn : getBtn;
 
-  choice.innerHTML = choices[randomize];
+  if (isLoading) {
+    targetBtn.classList.add("btn--loading");
+    targetBtn.disabled = true;
+  } else {
+    targetBtn.classList.remove("btn--loading");
+    targetBtn.disabled = false;
+  }
+}
+
+// ==========================
+// TRIVIA LOGIC
+// ==========================
+
+// Create a single choice element
+function createChoice(correctAnswer, choices, index) {
+  const choice = document.createElement("div");
+  choice.innerHTML = choices[index];
   choice.classList.add("choice");
-  choice.dataset.choice = choices[randomize];
+  choice.dataset.choice = choices[index];
 
   choice.addEventListener("click", (e) => {
-    let choices = document.querySelectorAll(".choice");
-    let answer = e.target;
+    const allChoices = document.querySelectorAll(".choice");
+    const selected = e.target;
 
-    if (answer.dataset.choice !== correct) {
-      answer.classList.add("incorrect");
-      choices.forEach((element) => {
-        if (element.dataset.choice === correct) {
-          element.classList.add("correct");
+    if (selected.dataset.choice !== correctAnswer) {
+      selected.classList.add("incorrect");
+      allChoices.forEach((c) => {
+        if (c.dataset.choice === correctAnswer) {
+          c.classList.add("correct");
         }
       });
-      disableChoices();
-      return;
+    } else {
+      selected.classList.add("correct");
     }
 
     disableChoices();
-    answer.classList.add("correct");
   });
 
   return choice;
 }
 
-async function getTrivia(amount, category, difficulty) {
-  const result = await fetch(
-    `https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`
-  );
-  const data = await result.json();
-  return data;
-}
-
-//
-// trivia process
-//
-
-getBtn.addEventListener("click", processTrivia);
-nextBtn.addEventListener("click", (e) => {
-  disableChoices();
-  trivia_txt.innerHTML = " ";
-  choices__container.innerHTML = " ";
-  processTrivia();
-});
-
-async function processTrivia() {
-  let settings = triviaSettings();
-
-  if (!localStorage.getItem("quizStatus")) {
-    if (!isStarting) {
-      isStarting = true;
-      localStorage.setItem("quizStatus", isStarting);
-      let data = await getTrivia(settings[0], settings[1], settings[2]);
-      localStorage.setItem("currentQst", JSON.stringify(data.results));
-    }
-  }
-
-  let current_trivia = JSON.parse(localStorage.getItem("currentQst"));
-
-  if (current_trivia && indicator == current_trivia.length - 1) {
-    localStorage.removeItem("quizStatus");
-    localStorage.removeItem("currentQst");
-    indicator = 0;
-    getBtn.style.display = "inline";
-    return;
-  }
-
-  processCurrentTrivia(current_trivia, showTrivia); // call 1
-
-  if (localStorage.getItem("quizStatus")) {
-    getBtn.style.display = "none";
+// Fetch trivia data from API
+async function fetchTrivia(amount, category, difficulty) {
+  try {
+    setLoading(true);
+    const res = await fetch(
+      `https://opentdb.com/api.php?amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`
+    );
+    const data = await res.json();
+    return data;
+  } catch {
+    triviaText.textContent = "❌ Failed to load. Check your internet and try again.";
+    return null;
+  } finally {
+    setLoading(false);
   }
 }
 
-function processCurrentTrivia(trivia, showCurrentTrivia) {
-  // call 2
-  let current_trivia = trivia[indicator];
-  let next = showCurrentTrivia(current_trivia, choicesRandomizer);
-  if (next) {
-    ++indicator;
-  }
-}
+// Display one trivia question
+function showTrivia(trivia, getRandomIndex) {
+  triviaText.innerHTML = trivia.question;
+  const allChoices = trivia.incorrect_answers.concat(trivia.correct_answer);
 
-function showTrivia(trivia, random) {
-  // call 3
-  trivia_txt.innerHTML = trivia.question;
-  let choices = trivia["incorrect_answers"].concat(trivia.correct_answer);
-
-  for (let i = 0; i < choices.length; i++) {
-    if (numberChecker.length == 4) {
-      numberChecker = [];
-    }
-    let randomize = random() - 1;
-    let choice = createTrivia(trivia["correct_answer"], choices, randomize);
-    choices__container.append(choice);
+  for (let i = 0; i < allChoices.length; i++) {
+    if (numberChecker.length === 4) numberChecker = [];
+    const randomIndex = getRandomIndex() - 1;
+    const choiceElement = createChoice(trivia.correct_answer, allChoices, randomIndex);
+    choicesContainer.append(choiceElement);
   }
 
   return true;
 }
- 
+
+// Process current trivia item
+function processCurrentTrivia(triviaList, displayFunction) {
+  const currentTrivia = triviaList[questionIndex];
+  if (displayFunction(currentTrivia, getRandomChoiceIndex)) {
+    questionIndex++;
+  }
+}
+
+// Handle quiz progression
+async function processTrivia() {
+  const settings = getTriviaSettings();
+  let triviaData = JSON.parse(localStorage.getItem("currentQst"));
+
+  // If no saved trivia data, fetch new
+  if (!triviaData) {
+    const data = await fetchTrivia(...settings);
+    if (!data || !data.results?.length) {
+      triviaText.textContent = "❌ No trivia available. Try again.";
+      return;
+    }
+    triviaData = data.results;
+    localStorage.setItem("currentQst", JSON.stringify(triviaData));
+    localStorage.setItem("quizStatus", true);
+    questionIndex = 0;
+    isStarting = true;
+  }
+
+  // If quiz finished
+  if (questionIndex >= triviaData.length) {
+    localStorage.clear();
+    questionIndex = 0;
+    getBtn.style.display = "inline";
+    triviaText.textContent = "🎯 Quiz finished! Well done!";
+    choicesContainer.innerHTML = "";
+    return;
+  }
+
+  if (localStorage.getItem("quizStatus")) {
+    getBtn.style.display = "none";
+  }
+
+  processCurrentTrivia(triviaData, showTrivia);
+}
+
+// ==========================
+// EVENT LISTENERS
+// ==========================
+getBtn.addEventListener("click", processTrivia);
+
+nextBtn.addEventListener("click", () => {
+  disableChoices();
+  triviaText.innerHTML = "";
+  choicesContainer.innerHTML = "";
+  processTrivia();
+});
+
+// Mobile navbar toggle
+if (navToggle) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+}
