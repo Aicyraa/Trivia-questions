@@ -1,21 +1,22 @@
 const getBtn = document.getElementById("getQst");
 const nextBtn = document.getElementById("nextQst");
-const trivia_txt = document.getElementById("trivia_txt");
+const trivia_txt = document.getElementById("trivia__txt");
 const choices__container = document.querySelector(".trivia__choices");
 let numberChecker = [];
+let indicator = 0;
 let isStarting = false;
 let score = 0;
 
 // support funciton
 
-function triviaDetails() {
+function triviaSettings() {
   let amount = document.querySelector(".trivia__amount");
   let category = document.querySelector(".trivia__category");
   let difficulty = document.querySelector(".trivia__difficulty");
   return [amount.value, category.value, difficulty.value];
 }
 
-function randomizer() {
+function choicesRandomizer() {
   while (true) {
     let randomize = Math.floor(Math.random() * 4) + 1;
     if (numberChecker.includes(randomize)) {
@@ -27,13 +28,14 @@ function randomizer() {
   }
 }
 
-function dissable(){
-  choices__container.style.pointerEvents = 'none';
-  nextBtn.classList.add('show')
+function disableChoices() {
+  choices__container.classList.toggle("disable");
+  nextBtn.classList.toggle("show");
 }
 
 function createTrivia(correct, choices, randomize) {
   let choice = document.createElement("div");
+
   choice.innerHTML = choices[randomize];
   choice.classList.add("choice");
   choice.dataset.choice = choices[randomize];
@@ -49,18 +51,16 @@ function createTrivia(correct, choices, randomize) {
           element.classList.add("correct");
         }
       });
-     dissable()
+      disableChoices();
       return;
     }
-    
-   dissable()
-   answer.classList.add('correct')
-    
+
+    disableChoices();
+    answer.classList.add("correct");
   });
 
   return choice;
 }
-
 
 async function getTrivia(amount, category, difficulty) {
   const result = await fetch(
@@ -70,41 +70,59 @@ async function getTrivia(amount, category, difficulty) {
   return data;
 }
 
+//
 // trivia process
+//
 
-getBtn.addEventListener("click", async (e) => {
-  let trivia_details = triviaDetails();
+getBtn.addEventListener("click", processTrivia);
+nextBtn.addEventListener("click", (e) => {
+  disableChoices();
+  trivia_txt.innerHTML = " ";
+  choices__container.innerHTML = " ";
+  processTrivia();
+});
+
+async function processTrivia() {
+  let settings = triviaSettings();
 
   if (!localStorage.getItem("quizStatus")) {
     if (!isStarting) {
       isStarting = true;
       localStorage.setItem("quizStatus", isStarting);
-      let data = await getTrivia(
-        trivia_details[0],
-        trivia_details[1],
-        trivia_details[2]
-      );
+      let data = await getTrivia(settings[0], settings[1], settings[2]);
       localStorage.setItem("currentQst", JSON.stringify(data.results));
     }
   }
 
   let current_trivia = JSON.parse(localStorage.getItem("currentQst"));
-  currentTrivia(current_trivia, showTrivia); // note
+
+  if (current_trivia && indicator == current_trivia.length - 1) {
+    localStorage.removeItem("quizStatus");
+    localStorage.removeItem("currentQst");
+    indicator = 0;
+    getBtn.style.display = "inline";
+    return;
+  }
+
+  processCurrentTrivia(current_trivia, showTrivia); // call 1
 
   if (localStorage.getItem("quizStatus")) {
     getBtn.style.display = "none";
   }
-});
+}
 
-function currentTrivia(trivia, show) {
-  let indicator = 0; // kailangan mag increase to pag pinindot na ung next
+function processCurrentTrivia(trivia, showCurrentTrivia) {
+  // call 2
   let current_trivia = trivia[indicator];
-  show(current_trivia, randomizer);
+  let next = showCurrentTrivia(current_trivia, choicesRandomizer);
+  if (next) {
+    ++indicator;
+  }
 }
 
 function showTrivia(trivia, random) {
-  // dapat mag return ng true or false pag tapos na next question
-  document.getElementById("trivia__txt").innerHTML = trivia.question;
+  // call 3
+  trivia_txt.innerHTML = trivia.question;
   let choices = trivia["incorrect_answers"].concat(trivia.correct_answer);
 
   for (let i = 0; i < choices.length; i++) {
@@ -115,4 +133,7 @@ function showTrivia(trivia, random) {
     let choice = createTrivia(trivia["correct_answer"], choices, randomize);
     choices__container.append(choice);
   }
+
+  return true;
 }
+ 

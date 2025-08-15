@@ -107,3 +107,7 @@ body {
 .show{
   display: inline !important;
 }
+
+.disable{
+  pointer-events: none !important;
+}
